@@ -29,7 +29,7 @@ import java.util.Map;
 
 public class WebdavDeleteTest extends HttpTestBase{
     private final String testDir = "/sling-test/" + getClass().getSimpleName() + System.currentTimeMillis();
-    private final String testDirUrl = HTTP_BASE_URL + "/dav/" + testDir;
+    private final String testDirUrl = HTTP_BASE_URL + testDir;
 
     private final String DEFAULT_HANDLER   = "default-delete-handler";
     private final String HANDLER_1   = "test-delete-handler-1";
