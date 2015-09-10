@@ -21,6 +21,7 @@ package org.apache.sling.jcr.webdav.impl.helper;
 import org.apache.jackrabbit.server.io.CopyMoveManager;
 import org.apache.jackrabbit.server.io.DeleteManager;
 import org.apache.jackrabbit.server.io.IOManager;
+import org.apache.jackrabbit.server.io.LockHandlerManager;
 import org.apache.jackrabbit.server.io.PropertyManager;
 import org.apache.jackrabbit.webdav.simple.DefaultItemFilter;
 import org.apache.jackrabbit.webdav.simple.ItemFilter;
@@ -51,6 +52,8 @@ public class SlingResourceConfig extends ResourceConfig {
 
     private final DeleteManager deleteManager;
 
+    private final LockHandlerManager lockHandlerManager;
+
     private final String servletContextPath;
 
     private final Dictionary<String, String> servletInitParams;
@@ -60,12 +63,16 @@ public class SlingResourceConfig extends ResourceConfig {
             IOManager ioManager,
             PropertyManager propertyManager,
             CopyMoveManager copyMoveManager,
-            DeleteManager deleteManager) {
+            DeleteManager deleteManager,
+            LockHandlerManager lockHandlerManager) {
+
         super(new SlingTikaDetector(mimeTypeService));
         this.ioManager = ioManager;
         this.propertyManager = propertyManager;
         this.copyMoveManager = copyMoveManager;
         this.deleteManager = deleteManager;
+        this.lockHandlerManager = lockHandlerManager;
+
         collectionTypes = OsgiUtil.toStringArray(
             config.get(SlingWebDavServlet.COLLECTION_TYPES),
             SlingWebDavServlet.COLLECTION_TYPES_DEFAULT);
@@ -133,6 +140,12 @@ public class SlingResourceConfig extends ResourceConfig {
     @Override
     public DeleteManager getDeleteManager() {
         return deleteManager;
+    }
+
+    @Override
+    public LockHandlerManager getLockHandlerManager() {
+        return lockHandlerManager;
+
     }
 
     @Override

@@ -39,6 +39,7 @@ import org.apache.jackrabbit.server.SessionProvider;
 import org.apache.jackrabbit.server.io.CopyMoveHandler;
 import org.apache.jackrabbit.server.io.DeleteHandler;
 import org.apache.jackrabbit.server.io.IOHandler;
+import org.apache.jackrabbit.server.io.LockHandler;
 import org.apache.jackrabbit.server.io.PropertyHandler;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavLocatorFactory;
@@ -50,6 +51,7 @@ import org.apache.sling.jcr.api.SlingRepository;
 import org.apache.sling.jcr.webdav.impl.handler.SlingCopyMoveManager;
 import org.apache.sling.jcr.webdav.impl.handler.SlingDeleteManager;
 import org.apache.sling.jcr.webdav.impl.handler.SlingIOManager;
+import org.apache.sling.jcr.webdav.impl.handler.SlingLockHandlerManager;
 import org.apache.sling.jcr.webdav.impl.handler.SlingPropertyManager;
 import org.apache.sling.jcr.webdav.impl.helper.SlingLocatorFactory;
 import org.apache.sling.jcr.webdav.impl.helper.SlingResourceConfig;
@@ -79,7 +81,9 @@ import org.osgi.service.http.NamespaceException;
         @Reference(name = SlingWebDavServlet.IOHANDLER_REF_NAME, referenceInterface = IOHandler.class, cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE, policy = ReferencePolicy.DYNAMIC),
         @Reference(name = SlingWebDavServlet.PROPERTYHANDLER_REF_NAME, referenceInterface = PropertyHandler.class, cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE, policy = ReferencePolicy.DYNAMIC),
         @Reference(name = SlingWebDavServlet.COPYMOVEHANDLER_REF_NAME, referenceInterface = CopyMoveHandler.class, cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE, policy = ReferencePolicy.DYNAMIC),
-        @Reference(name = SlingWebDavServlet.DELETEHANDLER_REF_NAME, referenceInterface = DeleteHandler.class, cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE, policy = ReferencePolicy.DYNAMIC)
+        @Reference(name = SlingWebDavServlet.DELETEHANDLER_REF_NAME, referenceInterface = DeleteHandler.class, cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE, policy = ReferencePolicy.DYNAMIC),
+        @Reference(name = SlingWebDavServlet.LOCKHANDLER_REF_NAME, referenceInterface = LockHandler.class, cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE, policy = ReferencePolicy.DYNAMIC)
+
 })
 public class SlingWebDavServlet extends SimpleWebdavServlet {
 
@@ -141,6 +145,8 @@ public class SlingWebDavServlet extends SimpleWebdavServlet {
 
     static final String DELETEHANDLER_REF_NAME = "DeleteHandler";
 
+    static final String LOCKHANDLER_REF_NAME = "LockHandler";
+
     @Reference
     private SlingRepository repository;
 
@@ -161,6 +167,9 @@ public class SlingWebDavServlet extends SimpleWebdavServlet {
 
     private final SlingDeleteManager deleteManager = new SlingDeleteManager(
             DELETEHANDLER_REF_NAME);
+
+    private final SlingLockHandlerManager lockHandlerManager = new SlingLockHandlerManager(
+            LOCKHANDLER_REF_NAME);
 
     private SlingResourceConfig resourceConfig;
 
@@ -230,13 +239,15 @@ public class SlingWebDavServlet extends SimpleWebdavServlet {
         this.propertyManager.setComponentContext(context);
         this.copyMoveManager.setComponentContext(context);
         this.deleteManager.setComponentContext(context);
+        this.lockHandlerManager.setComponentContext(context);
 
         resourceConfig = new SlingResourceConfig(mimeTypeService,
             context.getProperties(),
             ioManager,
             propertyManager,
             copyMoveManager,
-            deleteManager);
+            deleteManager,
+            lockHandlerManager);
 
         // Register servlet, and set the contextPath field to signal successful
         // registration
@@ -291,6 +302,14 @@ public class SlingWebDavServlet extends SimpleWebdavServlet {
 
     public void unbindDeleteHandler(final ServiceReference deleteHandlerReference) {
         this.deleteManager.unbindDeleteHandler(deleteHandlerReference);
+    }
+
+    public void bindLockHandler(final ServiceReference lockHandlerReference) {
+        this.lockHandlerManager.bindLockHandler(lockHandlerReference);
+    }
+
+    public void unbindLockHandler(final ServiceReference lockHandlerReference) {
+        this.lockHandlerManager.unbindLockHandler(lockHandlerReference);
     }
 
     /** Overridden as the base class uses sendError that we don't want (SLING-2443) */

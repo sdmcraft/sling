@@ -32,6 +32,8 @@ import org.apache.jackrabbit.server.io.ExportContext;
 import org.apache.jackrabbit.server.io.IOHandler;
 import org.apache.jackrabbit.server.io.IOManager;
 import org.apache.jackrabbit.server.io.ImportContext;
+import org.apache.jackrabbit.server.io.LockContext;
+import org.apache.jackrabbit.server.io.LockHandler;
 import org.apache.jackrabbit.server.io.PropertyExportContext;
 import org.apache.jackrabbit.server.io.PropertyHandler;
 import org.apache.jackrabbit.server.io.PropertyImportContext;
@@ -39,6 +41,7 @@ import org.apache.jackrabbit.server.io.CopyMoveHandler;
 import org.apache.jackrabbit.server.io.CopyMoveContext;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavResource;
+import org.apache.jackrabbit.webdav.lock.LockManager;
 import org.apache.jackrabbit.webdav.property.PropEntry;
 import org.apache.sling.commons.osgi.OsgiUtil;
 import org.apache.sling.jcr.webdav.impl.servlets.SlingWebDavServlet;
@@ -60,8 +63,7 @@ import javax.jcr.RepositoryException;
     @Property(name = SlingWebDavServlet.TYPE_NONCOLLECTIONS, value = SlingWebDavServlet.TYPE_NONCOLLECTIONS_DEFAULT, propertyPrivate = false),
     @Property(name = SlingWebDavServlet.TYPE_CONTENT, value = SlingWebDavServlet.TYPE_CONTENT_DEFAULT, propertyPrivate = false) })
 @Service
-public class DefaultHandlerService implements IOHandler, PropertyHandler, CopyMoveHandler,
-        DeleteHandler {
+public class DefaultHandlerService implements IOHandler, PropertyHandler, CopyMoveHandler,  DeleteHandler, LockHandler {
 
     private DefaultHandler delegatee;
 
@@ -180,5 +182,16 @@ public class DefaultHandlerService implements IOHandler, PropertyHandler, CopyMo
     public boolean canDelete(DeleteContext deleteContext,
             DavResource davResource) {
         return delegatee.canDelete(deleteContext, davResource);
+    }
+
+    @Override
+    public boolean canLock(LockContext lockContext,
+            DavResource davResource) {
+        return delegatee.canLock(lockContext, davResource);
+    }
+
+    @Override
+    public LockManager getLockManager() {
+        return delegatee.getLockManager();
     }
 }
