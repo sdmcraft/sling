@@ -35,6 +35,8 @@ import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
+import org.apache.jackrabbit.webdav.client.methods.DavMethod;
+import org.apache.jackrabbit.webdav.client.methods.LockMethod;
 
 /** Client functions to interact with Sling in integration tests */
 public class SlingIntegrationTestClient {
@@ -262,6 +264,10 @@ public class SlingIntegrationTestClient {
         final GetMethod get = new GetMethod(url);
         get.getParams().setContentCharset("UTF-8");
         return httpClient.executeMethod(get);
+    }
+
+    public void executeDavMethod(DavMethod davMethod) throws IOException {
+        httpClient.executeMethod(davMethod);
     }
 
 }

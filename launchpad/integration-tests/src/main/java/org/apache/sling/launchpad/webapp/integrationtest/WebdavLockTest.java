@@ -18,12 +18,27 @@
  */
 package org.apache.sling.launchpad.webapp.integrationtest;
 
+import junitx.framework.Assert;
+import org.apache.commons.httpclient.HostConfiguration;
+import org.apache.jackrabbit.webdav.client.methods.DavMethod;
+import org.apache.jackrabbit.webdav.client.methods.LockMethod;
+import org.apache.jackrabbit.webdav.lock.LockInfo;
+import org.apache.jackrabbit.webdav.lock.Scope;
+import org.apache.jackrabbit.webdav.lock.Type;
 import org.apache.sling.commons.testing.integration.HttpTestBase;
 import org.junit.Test;
+
+import java.io.IOException;
 
 public class WebdavLockTest extends HttpTestBase{
     @Test
     public void testLock() {
-        testClient.lo
+        LockInfo lockInfo = new LockInfo(Scope.EXCLUSIVE, Type.WRITE, "admin", 0, false);
+        try {
+            LockMethod lockMethod = new LockMethod("http://localhost:8080/content/slingdemo/abc.txt", lockInfo);
+            testClient.executeDavMethod(lockMethod);
+        } catch (IOException ex) {
+            Assert.fail(ex);
+        }
     }
 }

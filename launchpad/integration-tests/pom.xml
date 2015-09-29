@@ -210,6 +210,13 @@
       <scope>compile</scope>
     </dependency>
 
+    <!-- For webdav integration tests -->
+    <dependency>
+      <version>2.11.0</version>
+      <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>jackrabbit-webdav</artifactId>
+    </dependency>
+
     <!-- Dependencies for the Test Build and Run -->
     <dependency>
       <groupId>org.apache.sling</groupId>
