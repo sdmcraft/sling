@@ -22,6 +22,8 @@ import junitx.framework.Assert;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.jackrabbit.webdav.client.methods.DavMethod;
 import org.apache.jackrabbit.webdav.client.methods.LockMethod;
+import org.apache.jackrabbit.webdav.client.methods.PropFindMethod;
+import org.apache.jackrabbit.webdav.client.methods.UnLockMethod;
 import org.apache.jackrabbit.webdav.lock.LockInfo;
 import org.apache.jackrabbit.webdav.lock.Scope;
 import org.apache.jackrabbit.webdav.lock.Type;
@@ -35,7 +37,9 @@ public class WebdavLockTest extends HttpTestBase{
     public void testLock() {
         LockInfo lockInfo = new LockInfo(Scope.EXCLUSIVE, Type.WRITE, "admin", 0, false);
         try {
-            LockMethod lockMethod = new LockMethod("http://localhost:8080/content/slingdemo/abc.txt", lockInfo);
+            LockMethod lockMethod = new LockMethod("http://localhost:8080/content/slingdemo/abc3.txt", lockInfo);
+            //LockMethod unlockMethod = new UnLockMethod("http://localhost:8080/content/slingdemo/abc.txt", lockInfo);
+            PropFindMethod propFindMethod = new PropFindMethod("http://localhost:8080/content/slingdemo/abc3.txt");
             testClient.executeDavMethod(lockMethod);
         } catch (IOException ex) {
             Assert.fail(ex);
