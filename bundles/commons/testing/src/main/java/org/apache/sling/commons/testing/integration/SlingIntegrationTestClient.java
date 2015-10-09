@@ -24,8 +24,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.sun.org.apache.xerces.internal.dom.DeferredElementNSImpl;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
@@ -35,8 +37,14 @@ import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
+import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.client.methods.DavMethod;
 import org.apache.jackrabbit.webdav.client.methods.LockMethod;
+import org.apache.jackrabbit.webdav.client.methods.PropFindMethod;
+import org.apache.jackrabbit.webdav.lock.LockDiscovery;
+import org.apache.jackrabbit.webdav.property.DavProperty;
+import org.apache.jackrabbit.webdav.property.DavPropertyName;
+import org.w3c.dom.Document;
 
 /** Client functions to interact with Sling in integration tests */
 public class SlingIntegrationTestClient {
@@ -266,8 +274,23 @@ public class SlingIntegrationTestClient {
         return httpClient.executeMethod(get);
     }
 
-    public void executeDavMethod(DavMethod davMethod) throws IOException {
-        httpClient.executeMethod(davMethod);
+    public Document executeDavMethod(DavMethod davMethod)
+            throws IOException, DavException {
+//        PropFindMethod propFindMethod = new PropFindMethod("http://localhost:8080/content/slingdemo/abc.txt");
+//        httpClient.executeMethod(propFindMethod );
+//
+//
+//        DavProperty<LockDiscovery> davProperty = (DavProperty<LockDiscovery>) propFindMethod.getResponseBodyAsMultiStatus().getResponses()[0].getProperties(200).get(
+//                DavPropertyName.LOCKDISCOVERY);
+//
+//        LockDiscovery lockDiscovery = davProperty.getValue();
+        httpClient.executeMethod(davMethod );
+        return davMethod.getResponseBodyAsDocument();
+    }
+
+    public String executeMethod(HttpMethod method) throws IOException {
+        httpClient.executeMethod(method);
+        return method.getResponseBodyAsString();
     }
 
 }
